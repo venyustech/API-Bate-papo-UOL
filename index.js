@@ -1,6 +1,6 @@
 import express, { json } from "express";
 import cors from "cors";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br.js";
 // import joi from "joi";
@@ -72,5 +72,33 @@ app.post("/messages", async (req, res) => {
         mongoClient.close();
     } catch (error) {
         res.status(400).send("#03ERROR: post messages")
+    }
+});
+app.get("/messages", async (req, res) => {
+    const mongoClient = new MongoClient(process.env.MONGO_URI);
+
+    try {
+        await mongoClient.connect();
+        const messages = await mongoClient
+            .db("uol-chat")
+            .collection("messages")
+            .find({})
+            .toArray();
+
+        const messagesFilter = messages.filter((message) =>
+            (message.type === "private_message" && message.to === req.headers.user) ||
+            (message.from === req.headers.user) ||
+            (message.type === "message") ||
+            (message.to === "Todos")
+        );
+        if (req.query.limit) {
+            res.status(200).send(messagesFilter.slice(-req.query.limit));
+        } else {
+            res.status(200).send(messagesFilter);
+        }
+        mongoClient.close();
+    } catch (error) {
+        res.status(400).send("#04ERROR: get messages");
+        mongoClient.close();
     }
 });
