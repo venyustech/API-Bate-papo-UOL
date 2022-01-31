@@ -19,8 +19,11 @@
   "homepage": "https://github.com/venyustech/testenode#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "dayjs": "^1.10.7",
     "dotenv": "^15.0.0",
     "express": "^4.17.2",
+    "joi": "^14.0.4",
+    "joy": "^0.1.1",
     "mongodb": "^4.3.1"
   },
   "devDependencies": {
